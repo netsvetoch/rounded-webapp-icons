@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.rounded-webapp-icons" path="/org/gnome/shell/extensions/rounded-webapp-icons/">
+    <key name="corner-radius" type="i">
+      <default>22</default>
+      <range min="0" max="40"/>
+      <summary>Corner radius</summary>
+      <description>Corner radius as a percentage of the icon size. 0 disables rounding. Values above 40 are rejected so icons that are already circular are not cropped.</description>
+    </key>
+    <key name="only-square" type="b">
+      <default>true</default>
+      <summary>Skip icons that are already shaped</summary>
+      <description>Do not clip an icon when its corner pixels are already transparent.</description>
+    </key>
+    <key name="only-webapps" type="b">
+      <default>true</default>
+      <summary>Only web applications</summary>
+      <description>When true, only installed web apps are rounded. When false, every hard-square icon is rounded.</description>
+    </key>
+    <key name="extra-ids" type="as">
+      <default>[]</default>
+      <summary>Extra application ids</summary>
+      <description>Desktop file ids or prefixes to treat as web apps, in addition to Chrome, Chromium, Edge, Brave, Vivaldi, Opera, Yandex Browser, GNOME Web and Firefox web apps.</description>
+    </key>
+  </schema>
+</schemalist>
