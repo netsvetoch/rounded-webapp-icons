@@ -3,3 +3,5 @@ dist/
 gschemas.compiled
 *.mo
 *.swp
+__pycache__/
+*.pyc
