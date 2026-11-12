@@ -3,23 +3,17 @@
 UUID := rounded-webapp-icons@netsvetaev.dev
 ROOT := $(CURDIR)
 ARCHIVE := $(ROOT)/dist/$(UUID).shell-extension.zip
-SCHEMA := schemas/org.gnome.shell.extensions.rounded-webapp-icons.gschema.xml
 export TMPDIR := /home/netsvetoch/.hermes/cache/scratch
 
 test:
 	gjs -m tests/policy.test.js
 	gjs -m tests/corners.test.js
+	python3 tests/package_test.py
+	python3 tests/release_check_test.py
 	glib-compile-schemas --strict schemas/
 
 pack: test
-	mkdir -p dist
-	gnome-extensions pack --force --out-dir=dist \
-		--schema=$(SCHEMA) \
-		--extra-source=policy.js \
-		--extra-source=effect.js \
-		--extra-source=corners.js \
-		--extra-source=LICENSE \
-		.
+	python3 scripts/package_extension.py dist
 
 shell-test: pack
 	ROUNDED_WEBAPP_SCREENSHOT="$(ROOT)/dist/mask-test.png" \

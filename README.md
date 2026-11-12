@@ -34,15 +34,25 @@ On Wayland, GNOME Shell discovers a newly installed extension at the next login.
 
 ## Publishing on extensions.gnome.org
 
-The zip from `make pack` is the upload. It contains the extension sources, the GSettings schema and `LICENSE`, and does not contain tests or this README.
+Pushing a tag publishes a new version. The workflow uses the same API as `gnome-extensions upload` in GNOME 51. Review is still manual: the version is not public until a reviewer accepts it.
 
-Before the first upload:
+One-time setup. The account is the extensions.gnome.org account, not the GitHub account. Uploading accepts the terms at https://extensions.gnome.org/upload/.
 
-1. Push this repository to https://github.com/netsvetoch/rounded-webapp-icons (the `url` in `metadata.json`).
-2. Upload `dist/rounded-webapp-icons@netsvetaev.dev.shell-extension.zip`.
-3. Add a screenshot of the dash. `make shell-test` writes a mask close-up to `dist/mask-test.png`; the store screenshot should show the dock.
-4. `shell-version` is `51` only. Do not claim older versions without running them: Shell 49+ uses `Cogl.Snippet`, older versions do not.
-5. Bump the integer `version` in `metadata.json` for every upload. It must increase, even when `version-name` does not.
+    gh secret set EGO_USERNAME --repo netsvetoch/rounded-webapp-icons
+    gh secret set EGO_PASSWORD --repo netsvetoch/rounded-webapp-icons
+
+Each release:
+
+1. Raise the integer `version` in `metadata.json`. extensions.gnome.org rejects a version that is not higher than the last upload.
+2. Set `version-name` to the same number the tag will use, without the leading `v`.
+3. Commit, then push the tag:
+
+    git tag v1.0.0
+    git push origin v1.0.0
+
+The tag must be `v` plus `version-name`. The workflow tests, builds the zip, uploads it, and attaches the zip to a GitHub release. Re-run a failed upload from the Actions tab with the same tag; do not reuse a `version` integer.
+
+`shell-version` is `51` only. Do not claim older versions without running them.
 
 The extension is GPL-2.0-or-later, which extensions.gnome.org requires. `disable()` restores `Shell.App.prototype.create_icon_texture` and removes the shader.
 

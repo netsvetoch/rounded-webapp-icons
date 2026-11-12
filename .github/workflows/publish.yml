@@ -1,0 +1,60 @@
+name: Publish
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to publish, for example v1.0.1
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ego-upload
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+
+      - name: Install GJS
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gjs gir1.2-gdkpixbuf-2.0
+
+      - name: Test and check the tag
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: |
+          gjs -m tests/policy.test.js
+          gjs -m tests/corners.test.js
+          python3 tests/package_test.py
+          python3 tests/release_check_test.py
+          python3 scripts/release_check.py
+
+      - name: Package
+        run: python3 scripts/package_extension.py dist
+
+      - name: Upload to extensions.gnome.org
+        env:
+          EGO_USERNAME: ${{ secrets.EGO_USERNAME }}
+          EGO_PASSWORD: ${{ secrets.EGO_PASSWORD }}
+        run: python3 scripts/ego_upload.py dist/*.shell-extension.zip
+
+      - name: Attach the zip to the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" dist/*.shell-extension.zip \
+            --title "$RELEASE_TAG" \
+            --notes "Submitted to extensions.gnome.org for review. A new version is not public until a reviewer accepts it." \
+            || gh release upload "$RELEASE_TAG" dist/*.shell-extension.zip --clobber

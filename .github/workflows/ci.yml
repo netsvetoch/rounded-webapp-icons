@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GJS
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gjs gir1.2-gdkpixbuf-2.0
+      - name: Unit tests
+        run: |
+          gjs -m tests/policy.test.js
+          gjs -m tests/corners.test.js
+          python3 tests/package_test.py
+          python3 tests/release_check_test.py
