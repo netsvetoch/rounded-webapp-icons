@@ -1,9 +1,10 @@
 import {
     clampRadius,
     cornersAreOpaque,
-    insideRoundedRect,
+    insideSquircle,
     isWebApp,
     shouldMask,
+    squircleExponent,
 } from '../policy.js';
 
 function equal(actual, expected, name) {
@@ -59,9 +60,14 @@ equal(shouldMask(chrome, {...defaults, opaqueCorners: null}), true,
 equal(shouldMask('org.gnome.Nautilus.desktop', {...defaults, opaqueCorners: null}), false,
     'an unreadable native icon is not masked');
 
-equal(insideRoundedRect(0.5, 0.5, 0.22), true, 'the center stays visible');
-equal(insideRoundedRect(0, 0, 0.22), false, 'a square corner is outside the mask');
-equal(insideRoundedRect(0, 0.5, 0.22), true, 'an edge midpoint stays visible');
+const exponent = squircleExponent(0.22);
+equal(Math.abs(exponent - 5) < 0.05, true,
+    'the default setting matches the Hermes Local squircle');
+equal(insideSquircle(0.5, 0.5, exponent), true, 'the center stays visible');
+equal(insideSquircle(0, 0, exponent), false, 'a square corner is outside the mask');
+equal(insideSquircle(0, 0.5, exponent), true, 'an edge midpoint stays visible');
 const inset = 0.5 / Math.SQRT2;
-equal(insideRoundedRect(0.5 - inset, 0.5 - inset, 0.22), true,
+equal(insideSquircle(0.5 - inset, 0.5 - inset, exponent), true,
     'a point on an inscribed circle is not cropped');
+equal(insideSquircle(0.066, 0.066, exponent), true,
+    'the squircle keeps the shoulder that a circular corner would cut');

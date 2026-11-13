@@ -1,6 +1,6 @@
 # Rounded Web App Icons
 
-Скругляет квадратные иконки установленных веб-приложений в доке, сетке приложений и переключателе окон. Файлы иконок не меняются. Уже скруглённые иконки не обрезаются. Проверено на GNOME Shell 51.1.
+Скругляет квадратные иконки установленных веб-приложений в доке, сетке приложений и переключателе окон. Маска — squircle, как у иконки Hermes Local, а не круглая «монетка» в углах. Файлы иконок не меняются. Уже скруглённые иконки не обрезаются.
 
 Rounds hard-square web-app icons in the GNOME Shell dash, app grid, search and window switcher. Icons whose corners are already transparent are left alone, so Chrome, Telegram and an already-shaped PWA are not cropped.
 

@@ -61,13 +61,15 @@ export function shouldMask(appId, {
     return true;
 }
 
-// Same signed distance as the fragment shader in effect.js.
-// u and v are texture coordinates in 0..1; radius is a fraction of the side.
-export function insideRoundedRect(u, v, radius) {
-    const r = Math.min(0.5, Math.max(0, radius));
-    const qx = Math.abs(u - 0.5) - (0.5 - r);
-    const qy = Math.abs(v - 0.5) - (0.5 - r);
-    const outside = Math.hypot(Math.max(qx, 0), Math.max(qy, 0));
-    const inside = Math.min(Math.max(qx, qy), 0);
-    return outside + inside - r <= 1e-6;
+// Same superellipse as the fragment shader in effect.js.
+// Hermes Local's silhouette fits n = 5. The default radius 0.22 maps there.
+export function squircleExponent(radiusFraction) {
+    const t = Math.min(1, Math.max(0, radiusFraction / 0.4));
+    return 8 + (2.5 - 8) * t;
+}
+
+export function insideSquircle(u, v, exponent) {
+    const px = Math.abs(u - 0.5) * 2;
+    const py = Math.abs(v - 0.5) * 2;
+    return px ** exponent + py ** exponent <= 1 + 1e-4;
 }

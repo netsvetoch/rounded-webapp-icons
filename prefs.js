@@ -20,13 +20,13 @@ export default class RoundedWebAppIconsPreferences extends ExtensionPreferences 
 
         const appearance = new Adw.PreferencesGroup({
             title: _('Appearance'),
-            description: _('Square web-app icons are clipped to a rounded rectangle. Icons whose corners are already transparent are left alone.'),
+            description: _('Square web-app icons are clipped to a squircle, the same curve as the Hermes Local icon. Icons whose corners are already transparent are left alone.'),
         });
         page.add(appearance);
 
         const radius = new Adw.SpinRow({
-            title: _('Corner radius'),
-            subtitle: _('Percentage of the icon size. 0 turns rounding off. 22 matches a typical app icon, and 40 is the maximum so circular icons are not cropped.'),
+            title: _('Squircle'),
+            subtitle: _('0 turns the mask off. 22 matches the Hermes Local icon. Higher values are rounder, up to 40.'),
             adjustment: new Gtk.Adjustment({
                 lower: 0,
                 upper: 40,

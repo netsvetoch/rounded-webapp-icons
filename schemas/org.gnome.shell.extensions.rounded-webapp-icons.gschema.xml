@@ -4,8 +4,8 @@
     <key name="corner-radius" type="i">
       <default>22</default>
       <range min="0" max="40"/>
-      <summary>Corner radius</summary>
-      <description>Corner radius as a percentage of the icon size. 0 disables rounding. Values above 40 are rejected so icons that are already circular are not cropped.</description>
+      <summary>Squircle</summary>
+      <description>0 disables the mask. 22 matches the Hermes Local squircle. Higher values are rounder. The maximum is 40 so icons that are already circular are not cropped.</description>
     </key>
     <key name="only-square" type="b">
       <default>true</default>

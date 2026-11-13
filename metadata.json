@@ -1,11 +1,11 @@
 {
     "uuid": "rounded-webapp-icons@netsvetaev.dev",
     "name": "Rounded Web App Icons",
-    "description": "Rounds square web-app icons in the dash, app grid and window switcher. Icons that are already shaped are left alone.",
+    "description": "Clips square web-app icons to a squircle in the dash, app grid and window switcher. Icons that are already shaped are left alone.",
     "shell-version": ["51"],
     "url": "https://github.com/netsvetoch/rounded-webapp-icons",
-    "version": 1,
-    "version-name": "1.0.0",
+    "version": 2,
+    "version-name": "1.1.0",
     "settings-schema": "org.gnome.shell.extensions.rounded-webapp-icons",
     "gettext-domain": "rounded-webapp-icons@netsvetaev.dev"
 }
