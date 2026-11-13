@@ -6,20 +6,21 @@ import Clutter from 'gi://Clutter';
 import Cogl from 'gi://Cogl';
 import GObject from 'gi://GObject';
 
-import {squircleExponent} from './policy.js';
+import {squircleExponent, squircleInset} from './policy.js';
 
 const DECLARATIONS = `
 uniform float exponent;
+uniform float inset;
 `;
 
-// Post runs after the icon has been sampled into cogl_color_out.
-// Superellipse n=5 matches the Hermes Local icon. Multiply the whole
-// premultiplied color so the antialiased edge does not leave a fringe.
+// Distance form of the superellipse. Inset so the sides bow instead of
+// reading as a circular corner on a full-bleed icon.
 const POST = `
-vec2 p = abs(cogl_tex_coord_in[0].xy - vec2(0.5)) * 2.0;
-float field = pow(max(p.x, 0.0), exponent) + pow(max(p.y, 0.0), exponent);
-float aa = max(fwidth(field), 0.002);
-cogl_color_out *= 1.0 - smoothstep(1.0, 1.0 + aa, field);
+vec2 p = abs(cogl_tex_coord_in[0].xy - vec2(0.5)) * 2.0 / max(1.0 - inset, 0.5);
+float n = max(exponent, 2.0);
+float d = pow(pow(max(p.x, 0.0001), n) + pow(max(p.y, 0.0001), n), 1.0 / n);
+float aa = max(fwidth(d), 0.012);
+cogl_color_out *= 1.0 - smoothstep(1.0 - aa, 1.0 + aa, d);
 `;
 
 export const EFFECT_NAME = 'rounded-webapp-icons';
@@ -53,6 +54,7 @@ export const RoundedCornerEffect = GObject.registerClass({
             return;
         this._radius = value;
         this.set_uniform_float('exponent', 1, [squircleExponent(value)]);
+        this.set_uniform_float('inset', 1, [squircleInset(value)]);
         this.notify('radius');
     }
 });

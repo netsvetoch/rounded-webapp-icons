@@ -6,7 +6,7 @@ import GdkPixbuf from 'gi://GdkPixbuf';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
-import {cornersAreOpaque} from './policy.js';
+import {cornersAreOpaque, insideSquircle} from './policy.js';
 
 const SIZES = ['512x512', '256x256', '128x128', '64x64', '48x48', '32x32'];
 
@@ -90,4 +90,34 @@ export function sampleCornerAlphas(path, size = 48) {
 
 export function opaqueCornersOf(path) {
     return cornersAreOpaque(sampleCornerAlphas(path));
+}
+
+// Write a squircle-masked copy. The Shell loads this file as the icon,
+// so the shape does not depend on a shader surviving the dash paint path.
+export function maskIconFile(src, dest, exponent = 5) {
+    let pixbuf = GdkPixbuf.Pixbuf.new_from_file(src);
+    if (!pixbuf.get_has_alpha())
+        pixbuf = pixbuf.add_alpha(false, 0, 0, 0);
+
+    const width = pixbuf.get_width();
+    const height = pixbuf.get_height();
+    const channels = pixbuf.get_n_channels();
+    const stride = pixbuf.get_rowstride();
+    const srcPixels = pixbuf.get_pixels();
+    const outStride = width * 4;
+    const out = new Uint8Array(height * outStride);
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const keep = insideSquircle((x + 0.5) / width, (y + 0.5) / height, exponent);
+            const so = y * stride + x * channels;
+            const oo = y * outStride + x * 4;
+            out[oo] = srcPixels[so];
+            out[oo + 1] = srcPixels[so + 1];
+            out[oo + 2] = srcPixels[so + 2];
+            out[oo + 3] = keep ? srcPixels[so + channels - 1] : 0;
+        }
+    }
+    GdkPixbuf.Pixbuf.new_from_bytes(
+        GLib.Bytes.new(out), GdkPixbuf.Colorspace.RGB, true, 8,
+        width, height, outStride).savev(dest, 'png', [], []);
 }

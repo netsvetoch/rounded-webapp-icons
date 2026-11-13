@@ -61,13 +61,13 @@ equal(shouldMask('org.gnome.Nautilus.desktop', {...defaults, opaqueCorners: null
     'an unreadable native icon is not masked');
 
 const exponent = squircleExponent(0.22);
-equal(Math.abs(exponent - 5) < 0.05, true,
-    'the default setting matches the Hermes Local squircle');
+equal(Math.abs(exponent - 4.2) < 0.1, true,
+    'the default setting bows the sides into a squircle');
 equal(insideSquircle(0.5, 0.5, exponent), true, 'the center stays visible');
 equal(insideSquircle(0, 0, exponent), false, 'a square corner is outside the mask');
 equal(insideSquircle(0, 0.5, exponent), true, 'an edge midpoint stays visible');
 const inset = 0.5 / Math.SQRT2;
 equal(insideSquircle(0.5 - inset, 0.5 - inset, exponent), true,
     'a point on an inscribed circle is not cropped');
-equal(insideSquircle(0.066, 0.066, exponent), true,
+equal(insideSquircle(0.15, 0.15, exponent), true,
     'the squircle keeps the shoulder that a circular corner would cut');

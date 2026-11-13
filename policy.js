@@ -62,10 +62,18 @@ export function shouldMask(appId, {
 }
 
 // Same superellipse as the fragment shader in effect.js.
-// Hermes Local's silhouette fits n = 5. The default radius 0.22 maps there.
+// A squircle that fills the icon reads as a rounded square at dash size.
+// n ≈ 4 bows the sides; the shader insets the curve so the shape is obvious.
 export function squircleExponent(radiusFraction) {
     const t = Math.min(1, Math.max(0, radiusFraction / 0.4));
-    return 8 + (2.5 - 8) * t;
+    return 5.5 + (3.2 - 5.5) * t;
+}
+
+export function squircleInset(radiusFraction) {
+    const value = Number(radiusFraction);
+    if (!Number.isFinite(value))
+        return 0.14;
+    return Math.min(0.22, Math.max(0.1, value * 0.64));
 }
 
 export function insideSquircle(u, v, exponent) {

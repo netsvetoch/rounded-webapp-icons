@@ -2,7 +2,7 @@ import GdkPixbuf from 'gi://GdkPixbuf';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
-import {opaqueCornersOf, resolveIconPath, sampleCornerAlphas} from '../corners.js';
+import {maskIconFile, opaqueCornersOf, resolveIconPath, sampleCornerAlphas} from '../corners.js';
 
 function equal(actual, expected, name) {
     const left = JSON.stringify(actual);
@@ -60,3 +60,14 @@ equal(resolveIconPath(squarePath, []), squarePath,
     'an absolute icon path is used as-is');
 equal(resolveIconPath('/no/such/icon.png', []), null,
     'a missing absolute path is unknown');
+
+const platePath = `${dir}/plate.png`;
+const maskedPath = `${dir}/plate-masked.png`;
+saveRgba(platePath, 64, 64, () => [0, 0, 0, 255]);
+maskIconFile(platePath, maskedPath, 5);
+const maskedCorners = sampleCornerAlphas(maskedPath);
+equal(maskedCorners.every(alpha => alpha === 0), true,
+    'a hard square plate loses its corners');
+const masked = GdkPixbuf.Pixbuf.new_from_file(maskedPath);
+const mid = masked.get_pixels()[32 * masked.get_rowstride() + 32 * 4 + 3];
+equal(mid, 255, 'the center of a masked plate stays opaque');

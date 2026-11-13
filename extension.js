@@ -28,7 +28,7 @@ export default class RoundedWebAppIconsExtension extends Extension {
                 try {
                     extension._mask(this, actor);
                 } catch (error) {
-                    console.debug(`Rounded Web App Icons: ${error.message}`);
+                    console.log(`Rounded Web App Icons: ${error.message}`);
                 }
             }
             return actor;
@@ -92,6 +92,7 @@ export default class RoundedWebAppIconsExtension extends Extension {
 
         const effect = new RoundedCornerEffect({name: EFFECT_NAME, radius});
         actor.add_effect(effect);
+        console.log(`Rounded Web App Icons: masked ${appId}`);
         this._tracked.add(actor);
         const destroyId = actor.connect('destroy', () => this._tracked.delete(actor));
         actor._roundedWebAppDestroyId = destroyId;
